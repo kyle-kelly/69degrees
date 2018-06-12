@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, Image, View, Text } from 'react-native';
+import { Button, Image, Platform, View, Text, TextInput } from 'react-native';
 import { createStackNavigator } from 'react-navigation';
 
 class LogoTitle extends React.Component {
@@ -14,22 +14,30 @@ class LogoTitle extends React.Component {
 }
 
 class HomeScreen extends React.Component {
-  static navigationOptions = ({navigation}) => {
-    return {
-      title: '69 Degrees',
-      headerRight: 
-        <Button
-            title="+"
-            onPress={ () => navigation.navigate('Location')} 
-        />
-    };
-  };
+static navigationOptions = ({navigation}) => {
+
+  const {params} = navigation.state;
+
+  return {
+    headerTitle: <LogoTitle />,
+    headerRight: (
+      <Button
+      title = "+"
+      color = '#fff'
+      onPress = {() => params.handleSave && params.handleSave()}/>
+    ) }
+  }
+
+
+saveDetails = () => {
+  alert('Save Details');
+}
+
+componentDidMount () {
+  this.props.navigation.setParams({handleSave: () => this.props.navigation.navigate('Location')});
+}
 
   render() {
-    const { navigation } = this.props;
-    const zipCode = navigation.getParam('zipCode', 'NO-ZIP');
-    const otherParam = navigation.getParam('otherParam', 'some default value');
-
     return (
       <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
         <Text>Home Screen</Text>
@@ -39,21 +47,32 @@ class HomeScreen extends React.Component {
 }
 
 class AddLocationScreen extends React.Component {
-  static navigationOptions = {
-    title: 'Add Location',
+  static navigationOptions = ({ navigation, navigationOptions }) => {
+    const { params } = navigation.state;
+
+    return {
+      title: 'Add a Location',
+      /* These values are used instead of the shared configuration! */
+      headerStyle: {
+        backgroundColor: navigationOptions.headerTintColor,
+      },
+      headerTintColor: navigationOptions.headerStyle.backgroundColor,
+    };
   };
 
   render() {
+    /* 2. Read the params from the navigation state */
+    const { params } = this.props.navigation.state;
+    const itemId = params ? params.itemId : null;
+    const otherParam = params ? params.otherParam : null;
+
     return (
       <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-        <Button
-          title="Search"
-          onPress={() => {
-            this.props.navigation.navigate('Home', {
-              zipCode: 86,
-              otherParam: 'anything you want here',
-            });
-          }}
+        <Text>Where do you want to 69?</Text>
+        <TextInput
+          style={{height: 40}}
+          placeholder="Type zip code here!"
+          onChangeText={(text) => this.setState({text})}
         />
       </View>
     );
@@ -62,11 +81,24 @@ class AddLocationScreen extends React.Component {
 
 const RootStack = createStackNavigator(
   {
-    Home: HomeScreen,
-    Location: AddLocationScreen,
+    Home: {
+      screen: HomeScreen,
+    },
+    Location: {
+      screen: AddLocationScreen,
+    },
   },
   {
     initialRouteName: 'Home',
+    navigationOptions: {
+      headerStyle: {
+        backgroundColor: '#6c1ef4',
+      },
+      headerTintColor: '#fff',
+      headerTitleStyle: {
+        fontWeight: 'bold',
+      },
+    },
   }
 );
 
