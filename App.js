@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, Image, Platform, View, Text, TextInput } from 'react-native';
+import { Button, Image, Platform, View, Text, TextInput, StyleSheet } from 'react-native';
 import { createStackNavigator } from 'react-navigation';
 
 class LogoTitle extends React.Component {
@@ -24,7 +24,7 @@ static navigationOptions = ({navigation}) => {
       <Button
       title = "+"
       color = '#fff'
-      onPress = {() => params.handleSave && params.handleSave()}/>
+      onPress = {() => params.handleAdd && params.handleAdd()}/>
     ) }
   }
 
@@ -34,7 +34,7 @@ saveDetails = () => {
 }
 
 componentDidMount () {
-  this.props.navigation.setParams({handleSave: () => this.props.navigation.navigate('Location')});
+  this.props.navigation.setParams({handleAdd: () => this.props.navigation.navigate('Location')});
 }
 
   render() {
@@ -66,18 +66,38 @@ class AddLocationScreen extends React.Component {
     const itemId = params ? params.itemId : null;
     const otherParam = params ? params.otherParam : null;
 
+    state = {
+      zip: ''
+    }
+
+    handleZip = (text) => { this.setState({ zip: text })}
+
     return (
       <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-        <Text>Where do you want to 69?</Text>
+        <Text>Where do you want to 69°?</Text>
         <TextInput
-          style={{height: 40}}
-          placeholder="Type zip code here!"
-          onChangeText={(text) => this.setState({text})}
+          style = {styles.input}
+          placeholder = "Type zip code here!"
+          onChangeText = {this.handleZip}
+          maxLength = {8}
+        />
+        <Button
+          title="Add Location!"
+          onPress={() => this.props.navigation.navigate('Home', this.zip)}
         />
       </View>
     );
   }
 }
+
+const styles = StyleSheet.create({
+   container: {
+      paddingTop: 23
+   },
+   input: {
+      margin: 15,
+   }
+})
 
 const RootStack = createStackNavigator(
   {
@@ -92,7 +112,7 @@ const RootStack = createStackNavigator(
     initialRouteName: 'Home',
     navigationOptions: {
       headerStyle: {
-        backgroundColor: '#6c1ef4',
+        backgroundColor: '#40E0D0',
       },
       headerTintColor: '#fff',
       headerTitleStyle: {
