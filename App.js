@@ -14,45 +14,49 @@ class LogoTitle extends React.Component {
 }
 
 class HomeScreen extends React.Component {
-static navigationOptions = ({navigation}) => {
+  
+  static navigationOptions = ({navigation}) => {
 
-  const {params} = navigation.state;
+    const {params} = navigation.state;
 
-  return {
-    headerTitle: <LogoTitle />,
-    headerRight: (
-      <Button
-      title = "+"
-      color = '#fff'
-      onPress = {() => params.handleAdd && params.handleAdd()}/>
-    ) }
+    return {
+      headerTitle: <LogoTitle />,
+      headerRight: (
+        <Button
+          title = "+"
+          color = '#fff'
+          onPress = {() => params.handleAdd && params.handleAdd()}
+        />
+      )
+    }
   }
 
-
-saveDetails = () => {
-  alert('Save Details');
-}
-
-componentDidMount () {
-  this.props.navigation.setParams({handleAdd: () => this.props.navigation.navigate('Location')});
-}
+  componentDidMount () {
+    this.props.navigation.setParams({handleAdd: () => this.props.navigation.navigate('Location')});
+  }
 
   render() {
+    /* Read the params from the navigation state */
+    //const { params } = this.props.navigation.state;
+    //const zipCode = params ? params.zipCode : null;
+    const { navigation } = this.props;
+    const zipCode = navigation.getParam('zipCode', 'NO ZIP');
+
     return (
       <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
         <Text>Home Screen</Text>
+        <Text>zipCode: {JSON.stringify(zipCode)}</Text>
       </View>
     );
   }
 }
 
 class AddLocationScreen extends React.Component {
+  
   static navigationOptions = ({ navigation, navigationOptions }) => {
     const { params } = navigation.state;
-
     return {
       title: 'Add a Location',
-      /* These values are used instead of the shared configuration! */
       headerStyle: {
         backgroundColor: navigationOptions.headerTintColor,
       },
@@ -61,29 +65,20 @@ class AddLocationScreen extends React.Component {
   };
 
   render() {
-    /* 2. Read the params from the navigation state */
-    const { params } = this.props.navigation.state;
-    const itemId = params ? params.itemId : null;
-    const otherParam = params ? params.otherParam : null;
-
-    state = {
-      zip: ''
-    }
-
-    handleZip = (text) => { this.setState({ zip: text })}
 
     return (
       <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
         <Text>Where do you want to 69°?</Text>
         <TextInput
           style = {styles.input}
+          keyboardType = 'numeric'
           placeholder = "Type zip code here!"
-          onChangeText = {this.handleZip}
           maxLength = {8}
+          onChangeText = {(text)=> this.setState({text})}
         />
         <Button
           title="Add Location!"
-          onPress={() => this.props.navigation.navigate('Home', this.zip)}
+          onPress={() => this.props.navigation.navigate('Home', { zipCode: this.state.text } )}
         />
       </View>
     );
